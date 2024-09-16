@@ -1,0 +1,6 @@
+name: 'Pipeline test'
+description: 'Run the test'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
