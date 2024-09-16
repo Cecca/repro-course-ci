@@ -1,9 +1,17 @@
-FROM mambaorg/micromamba:1.5.9-noble
+# ------------------------------------------------------------------------
+# Build image
+FROM continuumio/miniconda:latest AS builder
 
+COPY conda-linux-64.lock /var/locks/conda-linux-64.lock
+RUN conda create -p /opt/env --file /var/locks/conda-linux-64.lock &&\
+    /opt/env/bin/pip install pyattimo==0.6.1
+
+# ------------------------------------------------------------------------
+# Runtime image
+FROM ubuntu:noble
+COPY --from=builder /opt/env /opt/env
 COPY . .
-RUN micromamba install -y -n base -f env.yaml && \
-    micromamba clean --all --yes
-RUN mkdir /tmp/app
+ENV PATH="/opt/env/bin:${PATH}"
 
 CMD python3 pipeline.py check
 
